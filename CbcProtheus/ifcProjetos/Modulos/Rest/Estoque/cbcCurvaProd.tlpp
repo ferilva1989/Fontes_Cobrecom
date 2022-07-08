@@ -1,0 +1,96 @@
+#include "totvs.ch"
+#include "tlpp-core.th"
+#include "tlpp-rest.th"
+
+
+class cbcCurvaProd from LongclassName 
+    public method New()
+    
+    // http://192.168.1.220:9938/ws/BI/BIGTCURVA
+    @Get("BI/BIGTCURVA")
+    public method GETtotalCurva()
+
+    // http://192.168.1.220:9938/ws/BI/BIDCURVA?filial=01&grupo=D
+    @Get("BI/BIDCURVA")
+    public method GETdetalheCurva()
+
+    // http://192.168.1.220:9938/ws/BI/BICAREPA
+    @Get("BI/BICAREPA")
+    public method GETCartEpa()
+
+    // http://192.168.1.220:9938/ws/BI/BIEPAXCART?detalhe=S
+    @Get("BI/BIEPAXCART")
+    public method GETepaXCart()
+
+endclass
+
+
+method new() class cbcCurvaProd
+return self
+
+
+method GETtotalCurva() class cbcCurvaProd
+    local jRet   as object
+    jRet            := JsonObject():New()
+	jRet['body']    := u_cbcQRYexec('SELECT * FROM BI_VW_EPACURVA_RESUMO')
+return oRest:setResponse(jRet:toJSon())
+
+
+method GETdetalheCurva() class cbcCurvaProd
+    local jRet      as object
+    local jQuery    as object
+    jRet   := JsonObject():New()
+    jQuery := JsonObject():New()
+    jQuery := oRest:getQueryRequest()
+    jRet['body']    := u_cbcQRYexec("SELECT * FROM BI_VW_EPACURVA_DETALHE" + " WHERE FILIAL = '"+;
+    jQuery['filial'] +"' and GRUPO = '"+jQuery['grupo']+"' ")
+return oRest:setResponse(jRet:toJSon())
+
+
+method GETCartEpa() class cbcCurvaProd
+    local jRet   as object
+    jRet            := JsonObject():New()
+	jRet['body']    := u_cbcQRYexec('SELECT * FROM  BI_VW_CART_EPA ORDER BY FILIAL, GRUPO, PROD')
+return oRest:setResponse(jRet:toJSon())
+
+
+method GETepaXCart() class cbcCurvaProd
+    local jRet      as object
+    local jQuery    as object
+    local cQry      as character
+
+    jQuery          := JsonObject():New()
+    jRet            := JsonObject():New()
+    jQuery          := oRest:getQueryRequest()
+    if jQuery['detalhe'] == 'S'
+        cQry := "SELECT * FROM BI_VW_EST_TO_CART WHERE QTD_CARTEIRA = 0"
+    elseif jQuery['detalhe'] == 'N'
+        cQry := ""
+        cQry += " SELECT "
+	    cQry += " BF_FILIAL				   AS [FILIAL], "
+	    cQry += " GRUPO					   AS [GRUPO], "
+	    cQry += " SUM(PESCOB_ESTOQUE)	   AS [PESCOB], "
+	    cQry += " 100 * (SUM(PESCOB_ESTOQUE) / "
+	    cQry += " SUM(SUM(PESCOB_ESTOQUE))OVER(PARTITION BY BF_FILIAL )) AS [PERC_TOT] " 
+        cQry += " FROM BI_VW_EST_TO_CART  "
+        cQry += " WHERE QTD_CARTEIRA = 0 GROUP BY BF_FILIAL,GRUPO "
+        cQry += " ORDER BY BF_FILIAL,GRUPO "
+    else
+        cQry := ""
+        cQry += " SELECT 
+	    cQry += " *,
+		cQry += " CASE 
+		cQry += " WHEN PESCOB_ESTOQUE <= PESCOB_CARTEIRA
+		cQry += " THEN 0
+		cQry += " ELSE ISNULL(PESCOB_ESTOQUE - PESCOB_CARTEIRA, 0)	
+		cQry += " END										AS [DISP_PESCOB],
+		cQry += " CASE 
+		cQry += " WHEN QTD_ESTOQUE <= QTD_CARTEIRA
+		cQry += " THEN 0
+		cQry += " ELSE ISNULL(QTD_ESTOQUE - QTD_CARTEIRA, 0)	
+		cQry += " END										AS [DISP_QTD]
+        cQry += " FROM BI_VW_EST_TO_CART 
+    endif
+	jRet['body']    := u_cbcQRYexec(cQry)
+return oRest:setResponse(jRet:toJSon())
+

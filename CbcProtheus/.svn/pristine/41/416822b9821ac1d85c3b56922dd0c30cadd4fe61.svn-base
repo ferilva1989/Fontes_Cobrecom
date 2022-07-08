@@ -1,0 +1,42 @@
+#INCLUDE 'PROTHEUS.CH'
+
+USER FUNCTION M410INIC
+
+LOCAL CMENNOTA1, CMENNOTA2
+LOCAL CENDENT1, CENDENT2
+
+/*
+	LEONARDO BOLOGNESI (01/02/16), Esta função esta no projeto Cobrecom
+	LEO 16/11/16 Apos Compilação para virada 11.8 recompilou projeto Portal e esta função nunca
+	existiu no projeto Cobrecom oficial. Comentei para evitar erros. 
+*/
+//U_PE410INIC()
+
+If ( Type("__lGetWeb") <> "U" )
+	If __lGetWeb           
+		if LEN(ALLTRIM(ZZJ->ZZJ_MENNOT)) > 254
+			CMENNOTA1 := SUBSTR(ALLTRIM(ZZJ->ZZJ_MENNOT),1,254)
+			CMENNOTA2 := SUBSTR(ALLTRIM(ZZJ->ZZJ_MENNOT),255, LEN(ALLTRIM(ZZJ->ZZJ_MENNOT)) - 254)
+		ELSE                                                   
+			CMENNOTA1 := ALLTRIM(ZZJ->ZZJ_MENNOT)
+			CMENNOTA2 := ""
+		endif
+		
+		if LEN(ALLTRIM(ZZJ->ZZJ_ENDENT)) > 39
+			CENDENT1 := SUBSTR(ALLTRIM(ZZJ->ZZJ_ENDENT),1,39)
+			CENDENT2 := SUBSTR(ALLTRIM(ZZJ->ZZJ_ENDENT),40, LEN(ALLTRIM(ZZJ->ZZJ_ENDENT)) - 39)
+		ELSE
+			CENDENT1 := ALLTRIM(ZZJ->ZZJ_ENDENT)
+			CENDENT2 := ""
+		endif
+		
+		M->C5_PEDCLI	:= PADR(ZZJ->ZZJ_PEDCLI,TAMSX3("C5_PEDCLI")[1])
+		M->C5_MENNOTA	:= PADR(CMENNOTA1,TAMSX3("C5_MENNOTA")[1]) // 254
+		M->C5_X_MENNF	:= PADR(CMENNOTA2,TAMSX3("C5_X_MENNF")[1])
+		M->C5_OBS		:= PADR(UPPER(ALLTRIM(ZZJ->ZZJ_MENPCP)),TAMSX3("C5_OBS")[1])
+		M->C5_ENDENT1	:= PADR(CENDENT1,TAMSX3("C5_ENDENT1")[1]) // 39
+		M->C5_ENDENT2	:= PADR(CENDENT2,TAMSX3("C5_ENDENT2")[1])
+	Endif
+Endif
+
+RETURN nil

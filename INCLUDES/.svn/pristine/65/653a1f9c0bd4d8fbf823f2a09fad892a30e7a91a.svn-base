@@ -1,0 +1,31 @@
+#define LINHA Chr(13)+Chr(10)
+#define CHAVE_CLI 1
+#define PALLET 2
+#define PEDIDO 3
+#define ITEM 4
+#define ACOND 5
+#define PRODUTO 6
+#define DESC_PRODUTO 7
+#define QTD_VEND 8
+#define LANCES_VENDIDOS 9
+#define QTD_LIB 10
+#define KG_LIBER 11
+#define LANCES_LIBERADOS 12
+#define METRAGEM 13
+#define SEQUENCIA 14
+#define COR 15
+#define LAUDO 16
+#define FILIAL 17
+#define CODBAR 14
+#define PESO_TOTAL_BOBINA 1
+#define TIPO_BOBINA 1
+#define PESO_BOBINA 2
+#define TARA_BOBINA 3
+#define BARCODE_BOB 4
+
+#define  PK_ZZ5_VOLID 	1
+#define  PK_ZZ5_SEQ 	2
+#define  PK_ZZ5_ORDSEP 	3
+#define  PK_ZZ5_RECZZ8	4
+#define  PK_ZZ5_JSPKLS	5
+

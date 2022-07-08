@@ -1,0 +1,3 @@
+#define BAIXARDEBITAR	1
+#define DESCONTO		2
+#define PRORROGACAO	3

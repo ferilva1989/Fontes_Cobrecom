@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="cp437">
+        <title>Advpl-Compile-RPO_AUX</title>
+
+        <!-- estilos -->
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://www.w3schools.com//lib/w3-theme-teal.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <!-- scripts -->
+        <script src="https://ace.c9.io/build/src/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+        <style>
+            html, body, form { height: 100%; }
+            #editor { width: 100%; height: 100%; }
+            .advplayl-loading { display: none; z-index: 99; position: fixed;
+                    top: 0px; bottom: 0px; left: 0px; right: 0px;
+                    font-size: 42px; background-color: rgba(0, 0, 0, 0.75);}
+            .advplayl-center {width: 100%; height: 100%; text-align: center;
+                    color: white;}
+        </style>
+    </head>
+
+    <body>
+        <form>
+        <nav class="w3-bar w3-theme w3-border w3-large w3-padding">
+        </nav>
+
+        <div class="w3-row" style="height: 88%">
+            <!-- editor -->
+            <div class="w3-twothird w3-panel" style="height: 100%">
+                <div class="w3-card" style="height: 100%">
+                    <div id="editor"><%= U_LoadFile(__aProcParms) %></div>
+                </div>
+            </div>
+
+            <!-- controls -->
+            <div class="w3-third">
+
+                <!-- stdout -->
+                <div class="w3-panel">
+                    <div class="w3-card">
+                        <div class="w3-container w3-theme w3-display-container advplayl-collapse">
+                            <span class="w3-container w3-display-right">+</span>
+                            <h4>stdout (sa&iacute;da)</h4>
+                        </div>
+                        <textarea rows="5" class="w3-input" name="stdout" id="stdout">saida da execucao</textarea>
+                    </div>
+                </div>
+
+                <!-- entry -->
+                <div class="w3-panel">
+                    <div class="w3-card">
+                        <div class="w3-container w3-theme w3-display-container advplayl-collapse">
+                            <span class="w3-container w3-display-right">+</span>
+                            <h4>Arquivo</h4>
+                        </div>
+                        <div class="w3-container">
+                            <p>
+                                <label>nome</label>
+                                <input type="text" class="w3-input w3-border" placeholder="nome do arquivo" name="arquivo" value=""/>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- actions -->
+                <div class="w3-panel">
+                    <button id="executar" class="w3-btn w3-theme-d4" style="width: 100%">Compilar</button>
+                    <hr/>
+                    <div id="resultado" class="w3-container"></div>
+                </div>
+
+                <!-- campos de controle -->
+                <input type="hidden" name="codigo" id="codigo" />
+                <input type="hidden" name="uuidv4" id="uuidv4" value="CUSTOM" />
+            </div>
+        </div>
+
+        <div id="loading" class="advplayl-loading">
+            <table class="advplayl-center"><tr><td>
+                <div class="fa fa-spinner fa-spin"></div>
+            </td></tr></table>
+        </div>
+
+        <script>
+            $(document).ready(function() {
+                // configura editor
+                var editor = ace.edit("editor");
+                editor.setTheme("ace/theme/chrome");
+                editor.getSession().setMode("ace/mode/vbscript");
+                editor.setFontSize(20);
+
+                $('#executar').click(function(event) {
+                    // atualiza campo do codigo
+                    $('#codigo').val(editor.getValue());
+
+                    $('#loading').show();
+
+                    // manda tudo para o server
+                    $.post('/u_xzRuntime.apl', $('form').serialize()).done(function(data) {
+                        var $resultado = $('#resultado');
+
+                        $('#stdout').val(data);
+
+                        if ( $('#stdout-esperado').val() === data) {
+                            $resultado.removeClass('w3-red');
+                            $resultado.addClass('w3-green');
+                            $resultado.html('<h6>funcionou :)</h6>');
+                        } else {
+                            $resultado.removeClass('w3-green');
+                            $resultado.addClass('w3-red');
+                            $resultado.html('<h6>nao funcionou :(</h6>');
+                        }
+                    }).always(function(){
+                        $('#loading').hide();
+                    });
+
+                    // evita que faca o post
+                    event.preventDefault();
+                });
+
+                // adicionada execucao com f9
+                $(window).bind('keyup', function(event) {
+                    if (event.key.toLowerCase() === 'f9') {
+                        $('#executar').click();
+                    }
+                });
+
+                // control collapse
+                $('.advplayl-collapse').nextAll().toggle().first().toggle();
+
+                $('.advplayl-collapse').click(function() {
+                    $(this).nextAll().toggle();
+                });
+            });
+        </script>
+
+        </form>
+    </body>
+</html>

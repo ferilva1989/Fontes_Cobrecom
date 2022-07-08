@@ -1,0 +1,76 @@
+#INCLUDE "PROTHEUS.CH"
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Programa  ³M450AROT³  Autor ³ Edvar Vassaitis        ³ Data ³30.07.2010³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³PE - Rotina Analise Credito Cliente                         ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Retorno   ³Array com novo botão                                        ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³Nenhum                                                      ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+
+/*Ponto de entrada para inclusao de rotinas de usuario na barra de menu da rotina de Análise de Credito / Cliente.
+O ponto de entrada deverá devolver um array nos mesmos moldes do aRotina utilizado pela browse.*/
+
+User Function M450AROT()
+
+	Local aMyRot := {}
+
+	aAdd(aMyRot, { "Consulta Equifax" 	,"U_CDEQUIFAX"                              		, 0 , 3} )
+	aAdd(aMyRot, { "Hist.Cliente"      	, "u_VisuHist(TRB->A1_COD,TRB->A1_LOJA)"    		, 0 , 2} )
+	aAdd(aMyRot, { "Consultas Crédito"  , "u_cbcCredView(TRB->A1_COD,TRB->A1_LOJA)"  	    , 0 , 3} )
+	AADD(aMyRot,{ "Anot.Incluir"  , 'CRMA090(3,"SA1")'  , 0 , 2})  //, 0, .F.})
+	AADD(aMyRot,{ "Anot.Visualiza"  , 'CRMA090(,"SA1")'  , 0 , 2})  //, 0, .F.})
+	// ENTRA HIST PEDIDO?
+	//aAdd(aMyRot, { "Hist.Inclui"      , "u_InclHist(.T.,TRB->A1_COD,TRB->A1_LOJA)", 0 , 3} ) //, 0, .F.})
+
+	Return aMyRot
+	*                            
+	************************
+User Function MA450MNU()
+	************************
+	*
+	Local _nRot:=1
+	Local _cRotina
+
+	PUBLIC _cRejeit := " " // By Roberto Oliveira
+	// Ponto de entrada para incluir memu do MATA450 E MATA450a - Análise de Crédito
+	Do While .T.
+		_cRotina := AllTrim(ProcName(_nRot++))
+		If Empty(_cRotina) .Or. _cRotina == "MATA450A" .Or. _cRotina == "MATA450"
+			Exit
+		EndIf
+	EndDo
+
+	If _cRotina == "MATA450A"
+		AADD(aRotina,{ "Hist.Cliente" , "u_VisuHist(TRB->A1_COD,TRB->A1_LOJA)"    , 0 , 2}) //, 0, .F.})
+		AADD(aRotina,{ "Hist.Pedido"  , "u_HistPed(TRB->A1_COD,TRB->A1_LOJA,.F.)"  , 0 , 2})  //, 0, .F.})
+		AADD(aRotina,{ "Anot.Incluir"  , 'CRMA090(3,"SA1")'  , 0 , 2})  //, 0, .F.})
+		AADD(aRotina,{ "Anot.Visualiza"  , 'CRMA090(,"SA1")'  , 0 , 2})  //, 0, .F.})
+	ElseIf _cRotina == "MATA450"
+		AADD(aRotina,{ "Hist.Cliente" , "u_VisuHist(SC9->C9_CLIENTE,SC9->C9_LOJA)", 0 , 2})  //, 0, .F.})
+		AADD(aRotina,{ "Hist.Pedido"  , "u_HistPed(SC9->C9_PEDIDO)"  , 0 , 2})  //, 0, .F.})
+		AADD(aRotina,{ "Anot.Incluir"  , 'CRMA090(3,"SA1")'  , 0 , 2})  //, 0, .F.})
+		AADD(aRotina,{ "Anot.Visualiza"  , 'CRMA090(,"SA1")'  , 0 , 2})  //, 0, .F.})
+	EndIf
+Return(.T.)
+/*/
+
+************************
+User Function M450TMAN()
+************************
+*  
+PONTO DE ENTRADA PARA TRATAR AS COLUNAS DA GRID DE PEDIDOS NA ANALISE DE CRÉDITO
+aHeader está visivel e apresenta os campos do SC5 que
+O Bruno solicitou a apresentaçãode alguns campos, sendo: Se já analisou anterormente, quantas análises
+data da análise valor analisado, etc...
+_meu := 2
+Return(.T.)R
+/*/

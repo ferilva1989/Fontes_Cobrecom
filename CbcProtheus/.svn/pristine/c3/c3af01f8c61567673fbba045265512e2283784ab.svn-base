@@ -1,0 +1,33 @@
+#include "totvs.ch"
+#include "tlpp-core.th"
+#include "tlpp-rest.th"
+
+class cbcMpConsulta from LongclassName 
+    public method New()
+    
+    // http://192.168.1.220:9938/ws/BI/BIGETMP
+    @Get("BI/BIGETMP")
+    public method GETtotalMP()
+
+    // http://192.168.1.220:9938/ws/BI/BIDETMP
+    @Get("BI/BIDETMP")
+    public method GETdetalheMP()
+endclass
+
+
+method new() class cbcMpConsulta
+return self
+
+
+method GETtotalMP() class cbcMpConsulta
+    local jRet   as object
+    jRet := JsonObject():New()
+	jRet['body'] := u_cbcQRYexec('exec CBC_SALDO_MP 0')
+return oRest:setResponse(jRet:toJSon())
+
+
+method GETdetalheMP() class cbcMpConsulta
+    local jRet   as object
+    jRet := JsonObject():New()
+    jRet['body'] := u_cbcQRYexec('exec CBC_SALDO_MP 1')
+return oRest:setResponse(jRet:toJSon())
