@@ -34,38 +34,38 @@
 
 
 User Function GPEWORD()
-Local cCampo		:= ""
-Local oDlg			:= Nil
-Local cMsgDic		:= ""	// Mensagem para validacao de dicionario de dados
+	Local cCampo		:= ""
+	Local oDlg			:= Nil
+	Local cMsgDic		:= ""	// Mensagem para validacao de dicionario de dados
 // Declaracao de arrays para dimensionar tela
-Local aAdvSize		:= {}
-Local aInfoAdvSize	:= {}
-Local aObjSize		:= {}
-Local aObjCoords	:= {}
-Local aGDCoord		:= {}
-Local aOfusca		:= If(FindFunction('ChkOfusca'), ChkOfusca(), { .T., .F., {"",""} }) //[1]Acesso; [2]Ofusca; [3]Mensagem
-Local aFldRel		:= {"RA_NOME", "RA_RACACOR", "RA_NUMCP", "RA_SERCP", "RA_CIC", "RA_PIS", "RA_RG", "RA_SEXO", "RA_NOMECMP", "RA_NASC", "RA_ADMISSA", "RA_HABILIT", "RA_RESERVI",	;
-						"RA_TITULOE", "RA_ZONASEC", "RA_ENDEREC", "RA_COMPLEM", "RA_BAIRRO", "RA_MUNICIP", "RA_NUMENDE", "RA_ESTADO", "RA_CEP", "RA_TELEFON", "RA_PAI", "RA_MAE",	;
-						"RA_DEMISSA", "RB_NOME", "RB_NREGCAR", "RB_NUMLIVR", "RB_NUMFOLH"}
-Local lBlqAcesso	:= aOfusca[2] .And. !Empty( FwProtectedDataUtil():UsrNoAccessFieldsInList( aFldRel ) )
-	
-Private	cPerg		:= "GPWORD"
-Private aInfo		:= {}
-Private aDepenIR	:= {}
-Private aDepenSF	:= {}
-Private aPerSRF		:= {}
-Private nDepen		:= 0
-Private lDepSf		:= Iif(SRA->(FieldPos("RA_DEPSF"))>0,.T.,.F.)
+	Local aAdvSize		:= {}
+	Local aInfoAdvSize	:= {}
+	Local aObjSize		:= {}
+	Local aObjCoords	:= {}
+	Local aGDCoord		:= {}
+	Local aOfusca		:= If(FindFunction('ChkOfusca'), ChkOfusca(), { .T., .F., {"",""} }) //[1]Acesso; [2]Ofusca; [3]Mensagem
+	Local aFldRel		:= {"RA_NOME", "RA_RACACOR", "RA_NUMCP", "RA_SERCP", "RA_CIC", "RA_PIS", "RA_RG", "RA_SEXO", "RA_NOMECMP", "RA_NASC", "RA_ADMISSA", "RA_HABILIT", "RA_RESERVI",	;
+		"RA_TITULOE", "RA_ZONASEC", "RA_ENDEREC", "RA_COMPLEM", "RA_BAIRRO", "RA_MUNICIP", "RA_NUMENDE", "RA_ESTADO", "RA_CEP", "RA_TELEFON", "RA_PAI", "RA_MAE",	;
+		"RA_DEMISSA", "RB_NOME", "RB_NREGCAR", "RB_NUMLIVR", "RB_NUMFOLH"}
+	Local lBlqAcesso	:= aOfusca[2] .And. !Empty( FwProtectedDataUtil():UsrNoAccessFieldsInList( aFldRel ) )
+
+	Private	cPerg		:= "GPWORD"
+	Private aInfo		:= {}
+	Private aDepenIR	:= {}
+	Private aDepenSF	:= {}
+	Private aPerSRF		:= {}
+	Private nDepen		:= 0
+	Private lDepSf		:= Iif(SRA->(FieldPos("RA_DEPSF"))>0,.T.,.F.)
 
 //Tratamento de acesso a Dados Sensíveis
-If lBlqAcesso
-	//"Dados Protegidos- Acesso Restrito: Este usuário não possui permissão de acesso aos dados dessa rotina. Saiba mais em {link documentação centralizadora}"
-	Help(" ",1,aOfusca[3,1],,aOfusca[3,2],1,0)
-	Return
-EndIf
+	If lBlqAcesso
+		//"Dados Protegidos- Acesso Restrito: Este usuário não possui permissão de acesso aos dados dessa rotina. Saiba mais em {link documentação centralizadora}"
+		Help(" ",1,aOfusca[3,1],,aOfusca[3,2],1,0)
+		Return
+	EndIf
 
 	Pergunte(cPerg,.F.)
-	
+
 	OpenProfile()
 
 	// Avalia o conteudo ja existente no profile e o altera se necessario
@@ -94,16 +94,16 @@ EndIf
 
 	DEFINE MSDIALOG oDlg TITLE OemToAnsi(STR0001) From aAdvSize[7],0 TO aAdvSize[6],aAdvSize[5] OF oMainWnd PIXEL
 
-		@ aGdCoord[1],aGdCoord[2] TO aGdCoord[3],aGdCoord[4] PIXEL
-		@ aGdCoord[1]+10,aGdCoord[2]+10 SAY OemToAnsi(STR0002) PIXEL
-		@ aGdCoord[1]+20,aGdCoord[2]+10 SAY OemToAnsi(STR0003) PIXEL
+	@ aGdCoord[1],aGdCoord[2] TO aGdCoord[3],aGdCoord[4] PIXEL
+	@ aGdCoord[1]+10,aGdCoord[2]+10 SAY OemToAnsi(STR0002) PIXEL
+	@ aGdCoord[1]+20,aGdCoord[2]+10 SAY OemToAnsi(STR0003) PIXEL
 
-		@ (((aObjSize[1,3])/100)*25),(aGdCoord[4]/2)-95 BMPBUTTON TYPE 5 ACTION Eval( { || Pergunte(cPerg,.T.) } )
+	@ (((aObjSize[1,3])/100)*25),(aGdCoord[4]/2)-95 BMPBUTTON TYPE 5 ACTION Eval( { || Pergunte(cPerg,.T.) } )
 
-		@ (((aObjSize[1,3])/100)*25),(aGdCoord[4]/2)-60 BUTTON OemToAnsi(STR0004) SIZE 55,11 ACTION Eval( { || (ndepen:= 0,fVarW_Imp() ) }  )
-		@ (((aObjSize[1,3])/100)*25),(aGdCoord[4]/2)+5 BUTTON OemToAnsi(STR0005) SIZE 55,11 ACTION Eval( { || fWord_Imp() } )
+	@ (((aObjSize[1,3])/100)*25),(aGdCoord[4]/2)-60 BUTTON OemToAnsi(STR0004) SIZE 55,11 ACTION Eval( { || (ndepen:= 0,fVarW_Imp() ) }  )
+	@ (((aObjSize[1,3])/100)*25),(aGdCoord[4]/2)+5 BUTTON OemToAnsi(STR0005) SIZE 55,11 ACTION Eval( { || fWord_Imp() } )
 
-		@ (((aObjSize[1,3])/100)*25),(aGdCoord[4]/2)+70 BMPBUTTON TYPE 2 ACTION Close(oDlg)
+	@ (((aObjSize[1,3])/100)*25),(aGdCoord[4]/2)+70 BMPBUTTON TYPE 2 ACTION Close(oDlg)
 	ACTIVATE DIALOG oDlg CENTERED
 
 Return( Nil)

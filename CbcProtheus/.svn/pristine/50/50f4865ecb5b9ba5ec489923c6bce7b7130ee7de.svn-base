@@ -414,7 +414,7 @@ user function A140IVPED()
 			UserException("Nenhum registro selecionado, ou pedido inexistente")
 		endif
 	endif
-
+	
 	RestArea(aArea)
 return aRet
 
@@ -427,7 +427,7 @@ static function prepSC7(oSql, cFil, nQtd, cCodigo, cLoja)
 	local nLoop     := 0
 	local aStruct   := {}
 	local lDoTemp   := FwIsInCallStack("xmlToErp")
-
+	
 	if (lDoTemp)
 		lDoTemp := .F.
 		if oSC7Temp:LCREATED

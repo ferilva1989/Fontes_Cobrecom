@@ -1444,7 +1444,7 @@ Next
 If !Empty(MV_PAR39) .And. MV_PAR39 == 2
 	While nL <= 3199 .And. nPagina==1
 		nL+=nAddL+05
-		oPrint:line(nL,135,nL,nColMax )
+		oPrint:line(nL,135,nL,nColMax )	
 	EndDo
 Else
 	While nL <= 3104 .And. nPagina==1
@@ -1468,8 +1468,8 @@ Endif
 If nL == 3104 .Or. nL == 3109 .And. lTotal2 .And. !lTotal
 	nL+=(nAddL+05)
 Endif
-if nW <= 2 .And. nHomD > 0 .And. nL > 3190
-	if !lAjustaLin
+if nW <= 2 .And. nHomD > 0 .And. (nL > 3190 .Or. nPagina = 2)
+	if !lAjustaLin .Or. nPagina = 2
 		nL += nAddL+05
 	endif
 EndIF
@@ -1618,7 +1618,7 @@ EndIf
 oPrint:say (nL+nTip+nPT,160,STR0021	, oFont08) 					//24 DATA DE ADMISSAO
 oPrint:say (nL+nTip+nPD,175,DtoC(SRA->RA_ADMISSA), oFont10)
 oPrint:say (nL+nTip+nPT,650,STR0022, oFont08) 					//25 DATA DO AVISO PREVIO
-oPrint:say (nL+nTip+nPD,665,Iif(Alltrim(SRG->RG_TPAVISO) $ "N", "",  DtoC(SRG->RG_DTAVISO)), oFont10)
+oPrint:say (nL+nTip+nPD,665,DtoC(SRG->RG_DATADEM), oFont10)
 oPrint:say (nL+nTip+nPT,1045,STR0026, oFont08) 					//26 DATA DE AFASTAMENTO
 oPrint:say (nL+nTip+nPD,1060,DtoC(SRG->RG_DATADEM), oFont10)
 oPrint:say (nL+nTip+nPT,1440	,STR0028	, oFont08)	 			//27 COD. AFAST.
@@ -1895,7 +1895,7 @@ Static Function fVerQuebra( nTipo, lLinhas, lPrimDed )
 Default lLinhas	 := .T.
 Default lPrimDed := .F.
 
-If nL > 3280
+If nL > 3280 .Or. (nTipo == 2 .And. nL >= 3109)
 	//QUEBRA NOS PROVENTOS
 	If nTipo == 1
 		lQuebraP := .T.
@@ -2136,7 +2136,7 @@ cCodAfa		:= fTabela(cTabRes,nPos,25)
 oPrint:say (nL+nTip+nPT+10,586+15,STR0021	, oFont08) //"24 DATA DE ADMISSAO"
 oPrint:say (nL+nTip+nPD+10,586+30,DtoC(SRA->RA_ADMISSA), oFont10)
 oPrint:say (nL+nTip+nPT+10,972+15,STR0022, oFont08) //"25 DATA DO AVISO PREVIO"
-oPrint:say (nL+nTip+nPD+10,972+30,Iif(Alltrim(SRG->RG_TPAVISO) $ "N", "", DtoC(SRG->RG_DTAVISO)), oFont10)
+oPrint:say (nL+nTip+nPD+10,972+30,DtoC(SRG->RG_DATADEM), oFont10)
 oPrint:say (nL+nTip+nPT+10,1358+15,STR0026, oFont08)//"26 DATA DE AFASTAMENTO"
 oPrint:say (nL+nTip+nPD+10,1358+30,DtoC(SRG->RG_DATADEM), oFont10)
 oPrint:say (nL+nTip+nPT+10,1758+15,STR0155	, oFont08) //"27 COD. AFASTAMENTO"
